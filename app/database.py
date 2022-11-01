@@ -3,10 +3,15 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from .config import setting
 
+uri = setting.DATABASE_URL
 
-DATABASE_URL = setting.DATABASE_URL
+if uri and uri.startswith("postgres://"):
+    url = uri.replace("postgres://", "postgresql://", 1)
 
-engine = create_engine(DATABASE_URL)
+
+database_connection = url
+
+engine = create_engine(database_connection)
 
 SessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine) 
 
