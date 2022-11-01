@@ -5,9 +5,10 @@ from .config import setting
 
 SQLALCHEMY_DATABASE_URL = setting.SQLALCHEMY_DATABASE_URL
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+#engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
-SessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine) 
+SessionLocal = sessionmaker(autocommit=False,autoflush=False) 
+
 
 Base = declarative_base()
 
