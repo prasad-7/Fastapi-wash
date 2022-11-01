@@ -2,7 +2,6 @@ from pydantic import BaseSettings
 
 class Settings(BaseSettings):
     ADMIN_MAIL : str
-    SQLALCHEMY_DATABASE_URL : str
     HOST : str
     DATABASE : str
     USER: str
