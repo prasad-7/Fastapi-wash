@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
-from .models import *
 from .routers import users,auth,admin,washes
 from .config import setting
 
