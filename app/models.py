@@ -1,6 +1,6 @@
 from .database import Base
 from sqlalchemy.sql.expression import text
-from sqlalchemy import TIMESTAMP, Column, ForeignKey,Integer,String,Boolean,Float
+from sqlalchemy import TIMESTAMP, Column, ForeignKey,Integer,String,Boolean,Float, false
 
 
 
