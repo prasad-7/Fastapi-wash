@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     DAYS_ACCEPTED : int
     SENDER_EMAIL : str
     SENDER_EMAIL_APP_PASSWORD : str
-
+    DATABASE_URL = str
     class Config:
         env_file = '.env'
 
