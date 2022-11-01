@@ -4,8 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
-from . import models
-from .database import engine
+from .models import *
 from .routers import users,auth,admin,washes
 from .config import setting
 
@@ -13,7 +12,7 @@ from .config import setting
 
 # creating the instance
 app = FastAPI(title="Mr.Wash Api", version="0.1.0",)
-models.Base.metadata.create_all(bind=engine)
+#models.Base.metadata.create_all(bind=engine)
 
 
 
