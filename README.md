@@ -10,4 +10,5 @@ It schedules the given time of the user and check the availabiltiy of the time a
 
 
 
-![college id](https://user-images.githubusercontent.com/91150388/199772849-b49cb4f5-68a4-46e6-8b09-36e5af1bc9ef.jpg)
+![image](https://user-images.githubusercontent.com/91150388/199772966-a52349cb-0bb6-4f82-b23b-349b180429e4.png)
+
