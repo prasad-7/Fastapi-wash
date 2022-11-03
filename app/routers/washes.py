@@ -88,7 +88,7 @@ def Get_slots(id : int , db: Session = Depends(get_db)):
     # Time Calculation
     current_time = datetime.now()
     current_time = utils.format_date(current_time)
-    start_current_time = datetime.now() - timedelta(hours=4)
+    start_current_time = datetime.now() #- timedelta(hours=4)
     query_time = datetime.now() + timedelta(days=2)
     future_time = utils.format_date(query_time)
 
