@@ -15,6 +15,9 @@ router = APIRouter(
 
 @router.post('/createuser', status_code=status.HTTP_202_ACCEPTED,)
 def Create_user(user: schemas.CreateUsers , db: Session = Depends(get_db)):
+
+    if not user.password == user.con_pass:
+        return "Password not Match"
     
     username = user.username
     email = user.email
@@ -113,4 +116,34 @@ def Reset_Password_Otp(parms : schemas.Password_otp, db: Session = Depends(get_d
         db.commit()
         return "Password Reset Success"
     else:
-        return "Wrong Otp, Try again!"        
+        user.otp = None
+        db.commit()
+        return "Wrong Otp, Try again!"      
+
+@router.post("/deleteuser",status_code=status.HTTP_200_OK)
+def delete_user(email : schemas.Deleteuser_email,db : Session = Depends(get_db)): 
+    user = db.query(models.Users).filter(models.Users.email == email.email).first()
+    if user: 
+        s = send_otp(email.email)
+        user.otp = s
+        db.commit()
+        return "Otp send successfully"
+    return "Email not exists"
+
+@router.delete("/deleteuser/verifyotp",status_code=status.HTTP_202_ACCEPTED)
+def deleteuser_verifyotp(parms : schemas.Deleteuser_otp,db : Session = Depends(get_db)):
+    user = db.query(models.Users).filter(models.Users.email == parms.email).first()
+
+    if user:
+        query_mail = db.execute(
+            f"""SELECT "otp" FROM users WHERE email  = '{parms.email}' """).first()
+        if query_mail["otp"] == parms.otp:
+            db.query(models.Users).filter(
+                models.Users.email == parms.email).delete()
+            db.commit()
+            return "Account deleted successfully"
+        user.otp = None
+        db.commit()
+        return "wrong otp"
+    return "Email not exists"
+

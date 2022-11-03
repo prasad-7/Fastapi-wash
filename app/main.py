@@ -6,12 +6,15 @@ from psycopg2.extras import RealDictCursor
 import time
 from .routers import users,auth,admin,washes
 from .config import setting
+from . import models
+from .database import engine
+
 
 
 
 # creating the instance
-app = FastAPI(title="Mr.Wash Api", version="0.1.0",)
-#models.Base.metadata.create_all(bind=engine)
+app = FastAPI(title="Mr Api", version="0.1.0",)
+models.Base.metadata.create_all(bind=engine)
 
 
 
@@ -43,7 +46,7 @@ while True:
 
 @app.get("/")
 def welcome():
-    return "Welcome, you have connected with Mr.washapi"
+    return "Welcome, you have connected to this  Api Endpoint"
 
 
 #   Routers

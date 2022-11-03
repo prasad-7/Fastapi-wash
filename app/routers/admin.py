@@ -6,42 +6,34 @@ from .. import models, utils, oauth2, schemas,utils
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from .auth import send_otp
 from ..config import setting
+from ..utils import hashing
 
 router = APIRouter(tags=["Admin"])
 
 
-@router.post("/createadmin", status_code=status.HTTP_201_CREATED)
-def Create_Admin(user: schemas.CreateAdmin, db: Session = Depends(get_db)):
+# utils variables
+
+
+@router.get("/createadmin", status_code=status.HTTP_201_CREATED)
+def Create_Admin(db: Session = Depends(get_db)):
 
     admin_email = setting.ADMIN_MAIL
+    
+    s = send_otp(admin_email)
 
-    admin = db.query(models.Admin).filter(models.Admin.email == user.email).first()
-    if admin:
-        return {"Admin Already Exists!"}
+    if s:
+        admin = models.Admin(email=admin_email,otp=s)
+        db.add(admin)
+        db.commit()
+        return "Otp send successfully!"
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail=f"An error occured")
 
-    # hashing the password.
-    hashed_password = utils.hashing(user.password)
-    user.password = hashed_password
-    try:
-        s = send_otp(admin_email)
-        data = db.query(models.Admin).filter(
-            models.Admin.email == admin_email).first()
-
-        if data:
-            data.otp = s
-            db.commit()
-            new_admin = models.Admin(**user.dict())
-            db.add(new_admin)
-            db.commit()
-            db.refresh(new_admin)
-            return "Otp send successfully"
-    except:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail=f"An error occured")
+   
 
 
 @router.post("/createadmin/verifyotp", status_code=status.HTTP_201_CREATED)
-def VerifyusersOtp(parms: schemas.Verifyotp, db: Session = Depends(get_db)):
+def VerifyusersOtp(parms: schemas.CreateAdmin, db: Session = Depends(get_db)):
 
     admin_email = setting.ADMIN_MAIL
 
@@ -49,31 +41,30 @@ def VerifyusersOtp(parms: schemas.Verifyotp, db: Session = Depends(get_db)):
         models.Admin.email == parms.email).first()
 
     if mail == None:
+        db.execute(f""" DELETE FROM admin WHERE "email" = '{admin_email}' """)
+        db.commit()
         return "Enter Your Email Correctly"
 
     query_mail = db.execute(
-        f"""SELECT "otp" FROM admin WHERE email  = '{admin_email}' """).first()
+        f"""SELECT "otp" FROM admin WHERE email  = '{parms.email}' """).first()
     
     if query_mail == None:
         return "Enter Your Email Correctly"
+
+    if not parms.password == parms.conf_pass:
+        db.execute(f""" DELETE FROM admin WHERE "email" = '{parms.email}' """)
+        db.commit()
+        return "Password not Match"
     
     if query_mail["otp"] == parms.otp:
-
-        data = db.query(models.Admin).filter(
-            models.Admin.email == admin_email).first()
-    
-        if data:
-            data.otp = None
-            db.commit()
-            return {"Registered Successfully!"}
-        return "An error Occured!"
+        hashed_password = hashing(parms.password)
+        mail.password = hashed_password
+        mail.otp = None
+        db.commit()
+        return "Registered Successfully!"
     
     db.execute(f""" DELETE FROM admin WHERE "email" = '{parms.email}' """)
-    data = db.query(models.Admin).filter(
-        models.Admin.email == admin_email).first()
-    data.otp = None
     db.commit()
-    print("Account deleted successfully!")
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                         detail=f"Wrong Otp {parms.otp}")
 
@@ -136,10 +127,11 @@ def booking(db: Session = Depends(get_db)):
     current_booking = db.query(models.BookWashes).all()
     return current_booking
 
-@router.post("/bookingcustomizetime", status_code=status.HTTP_200_OK)
+@router.post("/customerbooking", status_code=status.HTTP_200_OK)
 def custom_time(parms : schemas.Custom_booking_query ,db: Session = Depends(get_db)):
     query = db.execute(
         f""" SELECT id,type,completed,created_at FROM bookwashes WHERE created_at >= '{parms.start_time}' AND created_at <= '{parms.end_time}' """).all()
     if query == None:
         return "An error Occured"
     return query
+

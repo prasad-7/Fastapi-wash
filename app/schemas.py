@@ -10,12 +10,15 @@ from pydantic import BaseModel,EmailStr
 class CreateUsers(BaseModel):
     email : EmailStr
     password : str
+    con_pass: str
     username : str
 
 
 class CreateAdmin(BaseModel):
     email: EmailStr
     password: str
+    conf_pass: str
+    otp : int
 
 class Washes(BaseModel):
     type : str 
@@ -59,6 +62,17 @@ class Custom_booking_query(BaseModel):
 
 class Custom_booking_time(BaseModel):
     time : datetime
+
+class Office_time(BaseModel):
+    start : int = 9
+    end : int = 18
+
+class Deleteuser_otp(BaseModel):
+    email : EmailStr
+    otp : int
+
+class Deleteuser_email(BaseModel):
+    email : EmailStr
 
 
 #RESPONSE MODEL

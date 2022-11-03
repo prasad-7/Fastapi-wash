@@ -1,6 +1,7 @@
 from pydantic import BaseSettings
 
 class Settings(BaseSettings):
+    #SQLALCHEMY_DATABASE_URL : str
     ADMIN_MAIL : str
     HOST : str
     DATABASE : str
@@ -12,6 +13,8 @@ class Settings(BaseSettings):
     DAYS_ACCEPTED : int
     SENDER_EMAIL : str
     SENDER_EMAIL_APP_PASSWORD : str
+    OFFICE_START : int
+    OFFICE_END : int
     DATABASE_URL : str
     class Config:
         env_file = '.env'

@@ -43,6 +43,17 @@ def Book_Washes(parms : schemas.Bookwashes, db: Session = Depends(get_db), curre
     else:
         d = dict(typ)
         v = d["type"]
+
+    officetime = utils.sort_working_time(parms.start_time)
+
+    if not officetime:
+        return "Booking accepted in office time only"
+    
+    booking_accepttime = utils.booking_accept_after(parms.start_time)
+    past_cancel = utils.pasttime_cancel(parms.start_time)
+
+    if booking_accepttime or past_cancel:
+        return "Bookig Accepted only 2 days before"
     
     # Start Time
 
@@ -100,7 +111,7 @@ def status_update(status : schemas.status_update, db: Session = Depends(get_db))
     db.commit()
     return "Status updated successfully"
 
-@router.get("/currentbooking", status_code=status.HTTP_200_OK)
+@router.post("/currentbooking", status_code=status.HTTP_200_OK)
 def current_booking(time_ : schemas.Custom_booking_time  ,db : Session = Depends(get_db) ,current_user: int = Depends(oauth2.get_currentuser) ):
 
     notification = db.execute(
