@@ -86,7 +86,7 @@ def get_slots(hours, appointments, duration):
 
     for i in list_of_slot:
         if sort_working_time(i[0]):
-            working_slots.append([i])
+            working_slots.append(i)
 
     
     return working_slots
