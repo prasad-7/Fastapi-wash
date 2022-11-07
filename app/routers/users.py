@@ -26,8 +26,8 @@ def Create_user(user: schemas.CreateUsers , db: Session = Depends(get_db)):
     username = user.username
     email = user.email
     password = user.password
-    user = db.query(models.Users).filter(models.Users.email == email).first()
-    if user:
+    users = db.query(models.Users).filter(models.Users.email == email).first()
+    if users:
         return {"Email Exsists!"}
     else:
         s = send_otp(email)
