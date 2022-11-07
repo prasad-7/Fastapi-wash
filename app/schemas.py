@@ -26,6 +26,7 @@ class Washes(BaseModel):
     description : str
     price : float
     req : float
+    password: str
 
 class updatewash_time(BaseModel):
     before: int = 2
@@ -55,11 +56,13 @@ class Password_otp(BaseModel):
 class status_update(BaseModel):
     id : int
     status : bool
+    password : str
 
 
 class Custom_booking_query(BaseModel):
     start_time : datetime
     end_time : datetime
+    password : str
 
 class Custom_booking_time(BaseModel):
     time : datetime
@@ -74,6 +77,8 @@ class Deleteuser_otp(BaseModel):
 
 class Deleteuser_email(BaseModel):
     email : EmailStr
+
+
 
 
 #RESPONSE MODEL
@@ -154,4 +159,19 @@ class Allwashes(BaseModel):
         orm_mode = True
 
 
+class AdminUserresponse(BaseModel):
+    id: int
+    email: EmailStr
+    username: str
+    phone_number : str
 
+    class Config:
+        orm_mode = True
+
+class Getallwashresponse(BaseModel):
+    username : str
+    type : str
+    start_time : datetime
+    end_time : datetime
+    completed : bool
+    created_at : datetime

@@ -6,6 +6,8 @@ from ..utils import hashing,verify
 from ..oauth2 import create_accesstoken
 from .auth import send_otp
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+from ..config import setting
+from ..utils import verify
 
 
 router = APIRouter(
@@ -78,14 +80,14 @@ def Login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session =
 
 
 
-@router.get("/users/{id}", response_model=schemas.Userresponse)
+"""@router.get("/users/{id}", response_model=schemas.Userresponse)
 def Get_User(id: int, db: Session = Depends(get_db)):
     user = db.query(models.Users).filter(models.Users.id == id).first()
     
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"User with the id: {id} does not exists.")
-    return user
+    return user"""
 
 
 
@@ -149,3 +151,34 @@ def deleteuser_verifyotp(parms : schemas.Deleteuser_otp,db : Session = Depends(g
         return "wrong otp"
     return "Email not exists"
 
+
+@router.get("/getallusers/{password}",status_code=status.HTTP_202_ACCEPTED)
+def getall_users(password: str,db: Session = Depends(get_db)):
+
+    query_mail = db.execute(
+        f"""SELECT "password" FROM admin WHERE email  = '{setting.ADMIN_MAIL}' """).first()
+
+
+    if query_mail == None:
+        return "Contact Admin"
+
+
+    query = dict(query_mail)
+    q = query['password']
+    
+    
+    if not verify(password, q):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Invalid Password : {password} ")
+
+    user = db.query(models.Users).all()
+    for i in user:
+        #print(i.id,i.email,i.phone_number)
+        return {
+        "id" : i.id,
+        "email" : i.email,
+        "username" : i.username,
+        "phone_number" : i.phone_number
+        
+    }
+    

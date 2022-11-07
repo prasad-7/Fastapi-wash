@@ -4,6 +4,8 @@ from ..database import get_db
 from typing import List
 from sqlalchemy.orm import Session
 from .. import models, utils, oauth2, schemas
+from ..config import setting
+from ..utils import verify
 
 router = APIRouter(tags=["Booking"])
 
@@ -112,6 +114,19 @@ def Get_slots(id : int , db: Session = Depends(get_db)):
 
 @router.post("/washstatusupdate", status_code=status.HTTP_200_OK)
 def status_update(status : schemas.status_update, db: Session = Depends(get_db)):
+
+    query_mail = db.execute(
+        f"""SELECT "password" FROM admin WHERE email  = '{setting.ADMIN_MAIL}' """).first()
+
+    if query_mail == None:
+        return "Contact Admin"
+
+    query = dict(query_mail)
+    q = query['password']
+
+    if not verify(status.password, q):
+        return "Invalid Password"
+
     data = db.query(models.BookWashes).filter(
         models.BookWashes.id == status.id).first()
     if data == None:
@@ -127,7 +142,21 @@ def current_booking(time_ : schemas.Custom_booking_time  ,db : Session = Depends
         f"""SELECT type,start_time,end_time,completed FROM bookwashes WHERE created_at >= '{time_.time}'AND  user_id =  {current_user.id} """).all()
     return notification
 
-@router.get("/allbookedwashes",status_code=status.HTTP_200_OK)
-def allbookwashes(db: Session = Depends(get_db)):
+@router.get("/allbookedwashes/{password}",status_code=status.HTTP_200_OK,)
+def allbookwashes(password: str, db: Session = Depends(get_db)):
+
+    query_mail = db.execute(
+        f"""SELECT "password" FROM admin WHERE email  = '{setting.ADMIN_MAIL}' """).first()
+
+    if query_mail == None:
+        return "Contact Admin"
+
+    query = dict(query_mail)
+    q = query['password']
+
+    if not verify(password, q):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Invalid Password : {password} ")
     wash = db.query(models.BookWashes).all()
     return wash
+    

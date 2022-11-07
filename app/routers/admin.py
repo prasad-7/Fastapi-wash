@@ -6,7 +6,7 @@ from .. import models, utils, oauth2, schemas,utils
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from .auth import send_otp
 from ..config import setting
-from ..utils import hashing
+from ..utils import hashing,verify
 
 router = APIRouter(tags=["Admin"])
 
@@ -90,6 +90,19 @@ def AdminLogin(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Sess
 
 @router.post('/addwashes', status_code=status.HTTP_201_CREATED, response_model=Union[schemas.Addwash_Response, schemas.AddwashError])
 def Add_Washes(wash: schemas.Washes, db: Session = Depends(get_db)):
+
+    query_mail = db.execute(
+        f"""SELECT "password" FROM admin WHERE email  = '{setting.ADMIN_MAIL}' """).first()
+
+    if query_mail == None:
+        return "Contact Admin"
+
+    query = dict(query_mail)
+    q = query['password']
+
+    if not verify(wash.password, q):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Invalid Password : {wash.password} ")
     try:
         wash = models.Washes(type=wash.type,description=wash.description,price=wash.price,time_req=wash.req)
         db.add(wash)
@@ -102,6 +115,19 @@ def Add_Washes(wash: schemas.Washes, db: Session = Depends(get_db)):
 
 @router.put('/updatewashes/{id}', status_code=status.HTTP_201_CREATED, response_model=schemas.Updatewash_Response)
 def Update_Washes(id:int , wash: schemas.Washes, db: Session = Depends(get_db)):
+
+    query_mail = db.execute(
+        f"""SELECT "password" FROM admin WHERE email  = '{setting.ADMIN_MAIL}' """).first()
+
+    if query_mail == None:
+        return "Contact Admin"
+
+    query = dict(query_mail)
+    q = query['password']
+
+    if not verify(wash.password, q):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Invalid Password : {wash.password} ")
 
     #Query
     data = db.query(models.Washes).filter(models.Washes.id == id).first()
@@ -122,13 +148,40 @@ def Update_Washes(id:int , wash: schemas.Washes, db: Session = Depends(get_db)):
             status_code=status.HTTP_304_NOT_MODIFIED, detail=f"An Error Occured, Not Added")
 
 
-@router.get("/getallbooking", status_code=status.HTTP_200_OK)
-def booking(db: Session = Depends(get_db)):
+@router.get("/getallbooking/{password}", status_code=status.HTTP_200_OK)
+def booking(password: str, db: Session = Depends(get_db)):
+
+    query_mail = db.execute(
+        f"""SELECT "password" FROM admin WHERE email  = '{setting.ADMIN_MAIL}' """).first()
+
+    if query_mail == None:
+        return "Contact Admin"
+
+    query = dict(query_mail)
+    q = query['password']
+
+    if not verify(password, q):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Invalid Password : {password} ")
+
     current_booking = db.query(models.BookWashes).all()
     return current_booking
 
 @router.post("/customerbooking", status_code=status.HTTP_200_OK)
 def custom_time(parms : schemas.Custom_booking_query ,db: Session = Depends(get_db)):
+
+    query_mail = db.execute(
+        f"""SELECT "password" FROM admin WHERE email  = '{setting.ADMIN_MAIL}' """).first()
+
+    if query_mail == None:
+        return "Contact Admin"
+
+    query = dict(query_mail)
+    q = query['password']
+
+    if not verify(parms.password, q):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Invalid Password : {parms.password} ")
     query = db.execute(
         f""" SELECT id,type,completed,created_at FROM bookwashes WHERE created_at >= '{parms.start_time}' AND created_at <= '{parms.end_time}' """).all()
     if query == None:
