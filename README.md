@@ -15,6 +15,9 @@ It arrange slot according to the data provided by the admin, admin has the full 
 some endpoints doesnt need authentication as it is not arrested by Oauth2 it is pubically available.
 
 
+Access the API : https://fastapi-wash.herokuapp.com/docs#/
+
+
 
 ![image](https://user-images.githubusercontent.com/91150388/199772966-a52349cb-0bb6-4f82-b23b-349b180429e4.png)
 
