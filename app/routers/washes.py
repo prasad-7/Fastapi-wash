@@ -34,6 +34,15 @@ def Book_Washes(parms : schemas.Bookwashes, db: Session = Depends(get_db), curre
     typ = db.execute(
         f"""SELECT "type" FROM washes WHERE id = {parms.type} """).first()
 
+    username = db.execute(
+        f"""SELECT "username" FROM users WHERE id = {current_user.id} """).first()
+
+    if username == None or not username:
+        return "Provide Auth token"
+    
+    u = dict(username)
+    user = u["username"]
+
 
     # conditions
     if not query:
@@ -62,7 +71,7 @@ def Book_Washes(parms : schemas.Bookwashes, db: Session = Depends(get_db), curre
 
     if query:
         add_wash = models.BookWashes(wash_id=parms.type,user_id=current_user.id,
-             start_time=s_time,type=v,end_time=e_time)
+                                     start_time=s_time, type=v, end_time=e_time, user_name=user)
         db.add(add_wash)
         db.commit()
         db.refresh(add_wash)

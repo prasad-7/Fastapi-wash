@@ -12,6 +12,7 @@ class CreateUsers(BaseModel):
     password : str
     con_pass: str
     username : str
+    phn_number: str
 
 
 class CreateAdmin(BaseModel):

@@ -5,7 +5,7 @@ Revises: 368c85bb795f
 Create Date: 2022-11-02 10:29:38.156763
 
 """
-from threading import local
+
 from alembic import op
 import sqlalchemy as sa
 

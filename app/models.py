@@ -1,6 +1,6 @@
 from .database import Base
 from sqlalchemy.sql.expression import text
-from sqlalchemy import TIMESTAMP, Column, ForeignKey,Integer,String,Boolean,Float, false
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, ForeignKeyConstraint,Integer,String,Boolean,Float, false
 
 
 
@@ -12,6 +12,7 @@ class Users(Base):
     email = Column(String, nullable=False,unique=True)
     password = Column(String, nullable=False)
     otp = Column(Integer,nullable=True)
+    phone_number = Column(String, nullable=False,unique=False)
     created_at = Column(TIMESTAMP(timezone=True),
                         nullable=False, server_default=text('now()'))
 
@@ -45,9 +46,11 @@ class BookWashes(Base):
     user_id = Column(Integer,ForeignKey("users.id",ondelete="CASCADE"),nullable=False)
     wash_id = Column(Integer, ForeignKey(
         "washes.id", ondelete="CASCADE"), nullable=False)
+    user_name = Column(String, nullable=False, unique=False)
     type = Column(String, nullable=False)
     start_time = Column(TIMESTAMP(timezone=False), nullable=False)
     end_time = Column(TIMESTAMP(timezone=false), nullable=False)
     created_at = Column(TIMESTAMP(timezone=false),
                         nullable=False, server_default=text('now()'))
     completed = Column(Boolean, server_default='FALSE', nullable=False)
+

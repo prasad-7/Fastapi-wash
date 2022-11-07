@@ -5,11 +5,13 @@ from .config import setting
 
 uri = setting.DATABASE_URL
 
-if uri and uri.startswith("postgres://"):
-    url = uri.replace("postgres://", "postgresql://", 1)
+"""if uri and uri.startswith("postgres://"):
+    url = uri.replace("postgres://", "postgresql://", 1)"""
 
 
-database_connection = url
+database_connection = uri
+
+#database_connection = setting.DATABASE_URL
 
 engine = create_engine(database_connection)
 

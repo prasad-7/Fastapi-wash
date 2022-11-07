@@ -17,8 +17,10 @@ router = APIRouter(
 def Create_user(user: schemas.CreateUsers , db: Session = Depends(get_db)):
 
     if not user.password == user.con_pass:
-        return "Password not Match"
+        return "Password not match"
     
+    
+    phone_no = user.phn_number
     username = user.username
     email = user.email
     password = user.password
@@ -29,7 +31,7 @@ def Create_user(user: schemas.CreateUsers , db: Session = Depends(get_db)):
         s = send_otp(email)
         hashed_password = hashing(password)
         new_user = models.Users(
-            email=email, password=hashed_password, username=username,otp=s)
+            email=email, password=hashed_password, username=username, otp=s, phone_number=phone_no)
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
