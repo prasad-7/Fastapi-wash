@@ -14,7 +14,7 @@ from .database import engine
 
 # creating the instance
 app = FastAPI(title="Mr Api", version="0.1.0",)
-#models.Base.metadata.create_all(bind=engine)
+models.Base.metadata.create_all(bind=engine)
 
 
 
