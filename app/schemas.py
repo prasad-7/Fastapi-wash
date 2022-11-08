@@ -129,7 +129,7 @@ class Updatewash_Response(BaseModel):
     id: int
     type: str
     description: str
-    price: int
+    price: float
 
     class Config:
         orm_mode = True
