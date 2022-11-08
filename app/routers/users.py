@@ -7,7 +7,7 @@ from ..oauth2 import create_accesstoken
 from .auth import send_otp
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from ..config import setting
-from ..utils import verify
+from ..utils import verify,validate_email
 
 
 router = APIRouter(
@@ -17,6 +17,11 @@ router = APIRouter(
 
 @router.post('/createuser', status_code=status.HTTP_202_ACCEPTED,)
 def Create_user(user: schemas.CreateUsers , db: Session = Depends(get_db)):
+
+    validate = validate_email(user.email)
+    if not validate:
+        return "Email is not valid"
+
 
     if not user.password == user.con_pass:
         return "Password not match"
@@ -160,7 +165,7 @@ def getall_users(password: str,db: Session = Depends(get_db)):
 
 
     if query_mail == None:
-        return "Contact Admin"
+        return "Contact Admin to access this Endpoint"
 
 
     query = dict(query_mail)

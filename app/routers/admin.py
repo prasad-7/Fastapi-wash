@@ -88,14 +88,14 @@ def AdminLogin(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Sess
     return {"Access_token": access_token}
 
 
-@router.post('/addwashes', status_code=status.HTTP_201_CREATED, response_model=Union[schemas.Addwash_Response, schemas.AddwashError])
+@router.post('/addwashes', status_code=status.HTTP_201_CREATED)
 def Add_Washes(wash: schemas.Washes, db: Session = Depends(get_db)):
 
     query_mail = db.execute(
         f"""SELECT "password" FROM admin WHERE email  = '{setting.ADMIN_MAIL}' """).first()
 
     if query_mail == None:
-        return "Contact Admin"
+        return "Contact Admin to access this Endpoint"
 
     query = dict(query_mail)
     q = query['password']
@@ -113,14 +113,15 @@ def Add_Washes(wash: schemas.Washes, db: Session = Depends(get_db)):
         return wash
 
 
-@router.put('/updatewashes/{id}', status_code=status.HTTP_201_CREATED, response_model=schemas.Updatewash_Response)
+@router.put('/updatewashes/{id}', status_code=status.HTTP_201_CREATED)
 def Update_Washes(id:int , wash: schemas.Washes, db: Session = Depends(get_db)):
 
     query_mail = db.execute(
         f"""SELECT "password" FROM admin WHERE email  = '{setting.ADMIN_MAIL}' """).first()
 
+    
     if query_mail == None:
-        return "Contact Admin"
+        return "Contact Admin to access this Endpoint"
 
     query = dict(query_mail)
     q = query['password']
@@ -142,7 +143,16 @@ def Update_Washes(id:int , wash: schemas.Washes, db: Session = Depends(get_db)):
             data.price = wash.price
             data.time_req = wash.req
             db.commit()
-            return data
+            #return data.type,data.description,data.price
+            return {
+                "type" : data.type,
+                "description" : data.description,
+                "price":data.price,
+                "required_time": data.time_req
+            }
+
+            
+    
     except:
         raise HTTPException(
             status_code=status.HTTP_304_NOT_MODIFIED, detail=f"An Error Occured, Not Added")
@@ -154,8 +164,10 @@ def booking(password: str, db: Session = Depends(get_db)):
     query_mail = db.execute(
         f"""SELECT "password" FROM admin WHERE email  = '{setting.ADMIN_MAIL}' """).first()
 
+    print(query_mail)
+
     if query_mail == None:
-        return "Contact Admin"
+        return "Contact Admin to access this Endpoint"
 
     query = dict(query_mail)
     q = query['password']
@@ -174,7 +186,7 @@ def custom_time(parms : schemas.Custom_booking_query ,db: Session = Depends(get_
         f"""SELECT "password" FROM admin WHERE email  = '{setting.ADMIN_MAIL}' """).first()
 
     if query_mail == None:
-        return "Contact Admin"
+        return "Contact Admin to access this Endpoint"
 
     query = dict(query_mail)
     q = query['password']

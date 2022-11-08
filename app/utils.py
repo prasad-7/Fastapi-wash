@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from datetime import datetime 
 from .config import setting
+import requests
 
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated="auto")
@@ -93,4 +94,19 @@ def get_slots(hours, appointments, duration):
 
 
 
+def validate_email(email):
 
+    email_address = email
+
+    response = requests.get(
+        "https://isitarealemail.com/api/email/validate",
+        params={'email': email_address})
+
+    status = response.json()['status']
+    if status == "valid":
+        return True
+    else:
+        if  status == "invalid":
+            return False
+    
+    

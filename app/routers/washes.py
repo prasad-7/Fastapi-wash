@@ -30,6 +30,10 @@ def Get_Allwashes(db: Session = Depends(get_db)):
 @router.post("/bookwashes")
 def Book_Washes(parms : schemas.Bookwashes, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_currentuser)):
     
+
+    if current_user.id == None:
+        return "Access token expired"
+
     # Queries
     query = db.query(models.Washes).filter(models.Washes.id == parms.type).first()
  
@@ -71,6 +75,8 @@ def Book_Washes(parms : schemas.Bookwashes, db: Session = Depends(get_db), curre
     s_time = utils.format_date(parms.start_time)
     e_time = utils.format_date(parms.end_time)
 
+    
+
     if query:
         add_wash = models.BookWashes(wash_id=parms.type,user_id=current_user.id,
                                      start_time=s_time, type=v, end_time=e_time, user_name=user)
@@ -108,6 +114,7 @@ def Get_slots(id : int , db: Session = Depends(get_db)):
     #Parameters for get slots
     hours = start_current_time,query_time
     d = t
+
     available_slots = utils.get_slots(hours=hours,appointments=q,duration=d)
     return available_slots
 
@@ -119,7 +126,7 @@ def status_update(status : schemas.status_update, db: Session = Depends(get_db))
         f"""SELECT "password" FROM admin WHERE email  = '{setting.ADMIN_MAIL}' """).first()
 
     if query_mail == None:
-        return "Contact Admin"
+        return "Contact Admin to access this Endpoint"
 
     query = dict(query_mail)
     q = query['password']
@@ -149,7 +156,7 @@ def allbookwashes(password: str, db: Session = Depends(get_db)):
         f"""SELECT "password" FROM admin WHERE email  = '{setting.ADMIN_MAIL}' """).first()
 
     if query_mail == None:
-        return "Contact Admin"
+        return "Contact Admin to access this Endpoint"
 
     query = dict(query_mail)
     q = query['password']

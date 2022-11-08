@@ -49,7 +49,7 @@ class BookWashes(Base):
     user_name = Column(String, nullable=False, unique=False)
     type = Column(String, nullable=False)
     start_time = Column(TIMESTAMP(timezone=False), nullable=False)
-    end_time = Column(TIMESTAMP(timezone=false), nullable=False)
+    end_time = Column(TIMESTAMP(timezone=False), nullable=False)
     created_at = Column(TIMESTAMP(timezone=false),
                         nullable=False, server_default=text('now()'))
     completed = Column(Boolean, server_default='FALSE', nullable=False)
