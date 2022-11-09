@@ -80,9 +80,9 @@ def Login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session =
 
     # create token
     access_token = create_accesstoken(data={"user_id": user_login.id})
+    return {"Access_token": access_token,"logged": "in"}
 
-    return "Logged in"
-    return {"Access_token": access_token}
+    
 
 
 
